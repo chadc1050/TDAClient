@@ -1,36 +1,37 @@
 package client
 
 import (
-	"bytes"
 	"encoding/json"
 	"github.com/chadc1050/TDAClient/cache"
 	"github.com/chadc1050/TDAClient/types"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 )
 
 type TDAClient struct {
-	t   *cache.TokenCacher
-	id  string
-	key string
+	t           *cache.TokenCacher
+	consumerKey string
+	oAuthCode   string
 }
 
 const (
 	Environment = "https://api.tdameritrade.com/v1/"
 )
 
-func NewClient(id string, key string) *TDAClient {
+func NewClient(consumerKey string, oAuthCode string) *TDAClient {
 
-	var token, err = authorize(id, key)
+	var token, err = authorize(consumerKey, oAuthCode)
 
 	if err != nil {
 		panic("An error occurred while authorizing!")
 	}
 
 	return &TDAClient{
-		id:  id,
-		key: key,
-		t:   cache.NewTokenCacher(*token),
+		consumerKey: consumerKey,
+		oAuthCode:   oAuthCode,
+		t:           cache.NewTokenCacher(*token),
 	}
 
 }
@@ -38,7 +39,7 @@ func NewClient(id string, key string) *TDAClient {
 func (client *TDAClient) CheckToken() error {
 	if client.t.IsExpired() {
 		token := client.t.GetToken()
-		newToken, err := client.reAuthorize(token)
+		newToken, err := authorize(client.consumerKey, token.GetValue())
 		if err != nil {
 			return err
 		}
@@ -49,62 +50,14 @@ func (client *TDAClient) CheckToken() error {
 	return nil
 }
 
-func (client *TDAClient) reAuthorize(t cache.Token) (*cache.Token, error) {
+func authorize(consumerKey string, oAuthCode string) (*cache.Token, error) {
 
-	authRequest := types.AuthRequest{
-		GrantType:   "refresh_token",
-		AccessType:  "offline",
-		RedirectUri: "http://localhost:8080/",
-	}
+	authRequest := url.Values{}
+	authRequest.Set("grant_type", "refresh_token")
+	authRequest.Set("code", oAuthCode)
+	authRequest.Set("client_id", consumerKey)
 
-	b := bytes.Buffer{}
-
-	if err := json.NewEncoder(&b).Encode(authRequest); err != nil {
-		return nil, err
-	}
-
-	r, err := http.NewRequest(http.MethodGet, Environment+"/oauth2/token", &b)
-
-	if err != nil {
-		return nil, err
-	}
-
-	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	r.Header.Add("Accept", "application/json")
-
-	httpClient := &http.Client{}
-	resp, err := httpClient.Do(r)
-
-	currentTime := time.Now()
-
-	authResponse := types.AuthResponse{}
-	if err := json.NewDecoder(resp.Body).Decode(&authResponse); err != nil {
-		return nil, err
-	}
-
-	return cache.NewToken(
-		authResponse.AccessToken,
-		authResponse.RefreshToken,
-		currentTime.Add(time.Duration(authResponse.RefreshTokenExpiresIn/1000))), nil
-}
-
-func authorize(id string, key string) (*cache.Token, error) {
-
-	authRequest := types.AuthRequest{
-		GrantType:   "authorization_code",
-		AccessType:  "offline",
-		Code:        key,
-		ClientId:    id,
-		RedirectUri: "http://localhost:8080/",
-	}
-
-	b := bytes.Buffer{}
-
-	if err := json.NewEncoder(&b).Encode(authRequest); err != nil {
-		return nil, err
-	}
-
-	r, err := http.NewRequest(http.MethodGet, Environment+"/oauth2/token", &b)
+	r, err := http.NewRequest(http.MethodGet, Environment+"/oauth2/token", strings.NewReader(authRequest.Encode()))
 
 	if err != nil {
 		return nil, err
@@ -124,7 +77,6 @@ func authorize(id string, key string) (*cache.Token, error) {
 	}
 
 	return cache.NewToken(
-		authResponse.AccessToken,
 		authResponse.RefreshToken,
 		currentTime.Add(time.Duration(authResponse.RefreshTokenExpiresIn/1000))), nil
 }
