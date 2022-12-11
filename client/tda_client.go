@@ -1,10 +1,10 @@
 package client
 
 import (
-	"TDAClient/cache"
-	"TDAClient/types"
 	"bytes"
 	"encoding/json"
+	"github.com/chadc1050/TDAClient/cache"
+	"github.com/chadc1050/TDAClient/types"
 	"net/http"
 	"time"
 )

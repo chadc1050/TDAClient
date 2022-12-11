@@ -1,8 +1,8 @@
 package client
 
 import (
-	"TDAClient/types"
 	"encoding/json"
+	"github.com/chadc1050/TDAClient/types"
 	"net/http"
 )
 
