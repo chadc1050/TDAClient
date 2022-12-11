@@ -3,16 +3,17 @@ package cache
 import "time"
 
 type Token struct {
-	value   string
-	expires time.Time
-	created time.Time
+	value        string
+	refreshValue string
+	expires      time.Time
+	created      time.Time
 }
 
-func NewToken(value string, expiresIn int64) *Token {
+func NewToken(value string, refreshValue string, expires time.Time) *Token {
 	return &Token{
-		value:   value,
-		created: time.Now(),
-		expires: time.Now().Add(time.Duration(expiresIn)),
+		value:        value,
+		refreshValue: refreshValue,
+		expires:      expires,
 	}
 }
 

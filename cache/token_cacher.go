@@ -4,7 +4,7 @@ import "sync"
 
 type TokenCacher struct {
 	tokenLock sync.Mutex
-	token     Token
+	token     *Token
 }
 
 var (
@@ -15,14 +15,14 @@ func NewTokenCacher(token Token) *TokenCacher {
 	if instance == nil {
 		instance = &TokenCacher{
 			tokenLock: sync.Mutex{},
-			token:     token,
+			token:     &token,
 		}
 	}
 
 	return instance
 }
 
-func (t *TokenCacher) Update(token Token) {
+func (t *TokenCacher) Update(token *Token) {
 	t.tokenLock.Lock()
 
 	t.token = token
@@ -32,4 +32,8 @@ func (t *TokenCacher) Update(token Token) {
 
 func (t *TokenCacher) IsExpired() bool {
 	return t.token.IsExpired()
+}
+
+func (t *TokenCacher) GetToken() Token {
+	return *t.token
 }
