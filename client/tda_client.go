@@ -55,7 +55,7 @@ func authorize(consumerKey string, oAuthCode string) (*cache.Token, error) {
 
 	authRequest := url.Values{}
 	authRequest.Set("grant_type", "refresh_token")
-	authRequest.Set("code", oAuthCode)
+	authRequest.Set("refresh_token", oAuthCode)
 	authRequest.Set("client_id", consumerKey)
 
 	r, err := http.NewRequest(http.MethodGet, Environment+"/oauth2/token", strings.NewReader(authRequest.Encode()))
