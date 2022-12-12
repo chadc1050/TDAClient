@@ -41,6 +41,10 @@ func (accounts *Accounts) GetAccount(accountId string, fields string) (*types.Ac
 	httpClient := &http.Client{}
 	resp, err := httpClient.Do(r)
 
+	if err != nil {
+		return nil, err
+	}
+
 	accountsResponse := types.AccountResponse{}
 	if err := json.NewDecoder(resp.Body).Decode(&accountsResponse); err != nil {
 		return nil, err
