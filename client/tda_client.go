@@ -18,7 +18,7 @@ type TDAClient struct {
 }
 
 const (
-	Environment = "https://api.tdameritrade.com/v1/"
+	Environment = "https://api.tdameritrade.com/v1"
 )
 
 func NewClient(consumerKey string, redirectUri string) *TDAClient {

@@ -31,7 +31,7 @@ func (accounts *Accounts) GetAccount(accountId string, fields string) (*types.Ac
 
 	token := accounts.client.t.GetToken()
 
-	r.Header.Add("Bearer", token.GetAccessToken())
+	r.Header.Add("Authorization", "Bearer "+token.GetAccessToken())
 
 	if len(fields) != 0 {
 		q := r.URL.Query()
