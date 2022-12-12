@@ -50,6 +50,7 @@ func (client *TDAClient) CheckToken() error {
 	return nil
 }
 
+//authorize Uses consumer key and code received from OAuth or previously instantiated refresh token (but expired) to create a new refresh token.
 func authorize(consumerKey string, oAuthCode string) (*cache.Token, error) {
 
 	authRequest := url.Values{}
