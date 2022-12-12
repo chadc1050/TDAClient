@@ -3,22 +3,28 @@ package cache
 import "time"
 
 type Token struct {
-	value   string
-	expires time.Time
-	created time.Time
+	accessToken  string
+	refreshToken string
+	accessExpires      time.Time
+	created      time.Time
 }
 
-func NewToken(value string, expires time.Time) *Token {
+func NewToken(accessToken string, refreshToken string, accessExpires time.Time) *Token {
 	return &Token{
-		value:   value,
-		expires: expires,
+		accessToken: accessToken,
+		refreshToken: refreshToken,
+		accessExpires: accessExpires,
 	}
 }
 
 func (t *Token) IsExpired() bool {
-	return t.expires.Before(time.Now())
+	return t.accessExpires.Before(time.Now())
 }
 
-func (t *Token) GetValue() string {
-	return t.value
+func (t *Token) GetRefreshToken() string {
+	return t.refreshToken
+}
+
+func (t *Token) GetAccessToken() string  {
+	return t.accessToken
 }

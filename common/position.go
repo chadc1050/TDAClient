@@ -9,9 +9,9 @@ type Position struct {
 	LongQuantity                   float32    `json:"long_quantity"`
 	SettledLongQuantity            float32    `json:"settledLongQuantity"`
 	SettledShortQuantity           float32    `json:"settledShortQuantity"`
-	AgedQuantity                   float32    `json:"agedQuantity"`
-	Instrument                     Instrument `json:"instrument"`
-	MarketValue                    float32    `json:"marketValue"`
+	AgedQuantity float32    `json:"agedQuantity"`
+	Instrument   Instrument `json:"instrument"`
+	MarketValue  float32    `json:"marketValue"`
 	MaintenanceRequirement         float32    `json:"maintenanceRequirement"`
 	PreviousSessionLongQuantity    float32    `json:"previousSessionLongQuantity"`
 }
